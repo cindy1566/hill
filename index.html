@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微光設計 GLIMMER DESIGN | 平面視覺與品牌識別工作室</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            bg: '#FAF9F5',
+                            card: '#FFFFFF',
+                            dark: '#121214',
+                            gold: '#D4AF37',
+                            goldLight: '#F3E5AB',
+                            goldDark: '#A68212',
+                            gray: '#5A5A62',
+                            lightGray: '#EFECE6',
+                            border: '#E5E2D9'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+TC:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- GSAP & ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <style>
+        body {
+            background-color: #FAF9F5;
+            color: #121214;
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* 網格點陣背景裝飾 */
+        .bg-grid-pattern {
+            background-image: radial-gradient(#D4AF37 0.8px, transparent 0.8px);
+            background-size: 28px 28px;
+        }
+
+        /* Hover 卡片圖片縮放與光暈特效 */
+        .portfolio-card {
+            perspective: 1000px;
+        }
+        .portfolio-card .img-cover {
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .portfolio-card:hover .img-cover {
+            transform: scale(1.12);
+        }
+        
+        /* 動態遮罩拉開效果 */
+        .card-curtain {
+            transform: translateY(101%);
+            transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        .portfolio-card:hover .card-curtain {
+            transform: translateY(0%);
+        }
+
+        /* Modal 彈窗過渡 */
+        .modal-backdrop {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .modal-backdrop.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-box {
+            transform: translateY(30px) scale(0.97);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-backdrop.active .modal-box {
+            transform: translateY(0) scale(1);
+        }
+
+        /* 時間軸高亮亮線 */
+        .process-line-fill {
+            height: 0%;
+            transition: height 0.1s linear;
+        }
+
+        @keyframes spinSlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .spin-slow {
+            animation: spinSlow 22s linear infinite;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-brand-gold selection:text-white bg-grid-pattern">
+
+    <!-- 頂部導覽列 Navigation -->
+    <header id="main-header" class="fixed top-0 left-0 w-full z-50 bg-brand-bg/85 backdrop-blur-lg border-b border-brand-border transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-xl font-black tracking-widest text-brand-dark flex items-center gap-3 group">
+                <span class="w-4 h-4 rounded-full bg-brand-gold inline-block group-hover:scale-125 transition-transform duration-300 shadow-sm shadow-brand-gold/50"></span>
+                <span class="font-bold">GLIMMER <span class="text-xs text-brand-gray font-normal tracking-normal ml-1">/ 微光設計</span></span>
+            </a>
+            
+            <nav class="hidden md:flex space-x-9 text-sm font-semibold tracking-wide text-brand-gray">
+                <a href="#about" class="hover:text-brand-dark transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-gold hover:after:w-full after:transition-all">關於我們</a>
+                <a href="#services" class="hover:text-brand-dark transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-gold hover:after:w-full after:transition-all">服務項目</a>
+                <a href="#portfolio" class="hover:text-brand-dark transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-gold hover:after:w-full after:transition-all">精選案例</a>
+                <a href="#process" class="hover:text-brand-dark transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-gold hover:after:w-full after:transition-all">合作流程</a>
+                <a href="#team" class="hover:text-brand-dark transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-gold hover:after:w-full after:transition-all">團隊成員</a>
+            </nav>
+
+            <a href="#contact" class="hidden sm:inline-flex items-center gap-2 px-7 py-3 text-xs font-bold uppercase tracking-widest text-white bg-brand-dark rounded-full hover:bg-brand-gold transition-all shadow-lg hover:shadow-brand-gold/30 transform hover:-translate-y-0.5">
+                <span>預約合作諮詢</span>
+                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </a>
+
+            <button id="menu-btn" aria-label="Toggle Menu" class="md:hidden text-brand-dark focus:outline-none text-2xl p-2">
+                <i class="fa-solid fa-bars-staggered"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Nav Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-brand-border px-8 py-6 space-y-4 shadow-xl">
+            <a href="#about" class="block text-brand-dark font-medium hover:text-brand-gold">關於我們</a>
+            <a href="#services" class="block text-brand-dark font-medium hover:text-brand-gold">服務項目</a>
+            <a href="#portfolio" class="block text-brand-dark font-medium hover:text-brand-gold">精選案例</a>
+            <a href="#process" class="block text-brand-dark font-medium hover:text-brand-gold">合作流程</a>
+            <a href="#team" class="block text-brand-dark font-medium hover:text-brand-gold">團隊成員</a>
+            <a href="#contact" class="block text-brand-gold font-bold pt-2 border-t border-brand-border">預約合作諮詢 →</a>
+        </div>
+    </header>
+
+    <!-- 1. Hero 主視覺區域 -->
+    <section class="relative min-h-screen flex items-center pt-32 pb-20 px-6 overflow-hidden">
+        <div class="hero-blob absolute top-10 right-0 w-[550px] h-[550px] bg-gradient-to-br from-amber-200/40 to-brand-gold/20 rounded-full blur-[120px] pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <div class="lg:col-span-7 space-y-8 z-10">
+                <div class="gsap-hero-badge inline-flex items-center gap-2.5 px-4 py-2 bg-white border border-brand-border rounded-full shadow-sm text-xs text-brand-goldDark font-mono tracking-widest uppercase">
+                    <span class="w-2 h-2 rounded-full bg-brand-gold animate-ping"></span>
+                    <span>Crafting Visuals, Nurturing Stories</span>
+                </div>
+                
+                <h1 class="text-4xl sm:text-6xl xl:text-7xl font-black leading-[1.12] tracking-tight text-brand-dark">
+                    <span class="gsap-hero-title block">用視覺構建結構</span>
+                    <span class="gsap-hero-title block text-transparent bg-clip-text bg-gradient-to-r from-brand-dark via-brand-goldDark to-brand-gold">
+                        用溫度傳遞故事
+                    </span>
+                </h1>
+                
+                <p class="gsap-hero-sub text-base sm:text-xl text-brand-gray font-light leading-relaxed max-w-2xl">
+                    微光設計（GLIMMER DESIGN）專注於品牌識別（VI）、包裝出版與當代平面美学。透過網格系統的嚴謹邏輯與極簡溫暖的視覺語言，為企業與文化機構締造深具感染力的品牌形象。
+                </p>
+
+                <div class="gsap-hero-btn flex flex-wrap items-center gap-5 pt-4">
+                    <a href="#contact" class="px-8 py-4 bg-brand-dark text-white font-bold text-xs tracking-widest uppercase rounded-full hover:bg-brand-gold transition-all duration-300 shadow-xl hover:shadow-brand-gold/30 transform hover:-translate-y-1">
+                        開啟合作洽談
+                    </a>
+                    <a href="#portfolio" class="px-8 py-4 bg-white border border-brand-border text-brand-dark font-bold text-xs tracking-widest uppercase rounded-full hover:border-brand-dark transition-all duration-300 shadow-sm hover:shadow-md">
+                        探索作品集
+                    </a>
+                </div>
+
+                <!-- GSAP 數據統計計數器 -->
+                <div class="gsap-hero-stats grid grid-cols-3 gap-6 pt-8 border-t border-brand-border/80 max-w-lg">
+                    <div>
+                        <div class="text-3xl sm:text-4xl font-black text-brand-dark font-mono"><span class="counter-num" data-target="120">0</span>+</div>
+                        <div class="text-xs text-brand-gray font-medium mt-1">專案成功執行</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl sm:text-4xl font-black text-brand-dark font-mono"><span class="counter-num" data-target="15">0</span>+</div>
+                        <div class="text-xs text-brand-gray font-medium mt-1">國內外設計獲獎</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl sm:text-4xl font-black text-brand-dark font-mono"><span class="counter-num" data-target="99">0</span>%</div>
+                        <div class="text-xs text-brand-gray font-medium mt-1">客戶滿意與續約率</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側主視覺展示卡片 -->
+            <div class="lg:col-span-5 relative z-10 flex justify-center">
+                <div class="gsap-hero-img-box relative w-full max-w-md aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-white group">
+                    <img src="https://images.unsplash.com/photo-1600132806370-bf17e65e942f?q=80&w=1000&auto=format&fit=crop" 
+                         alt="GLIMMER Studio Showcase" 
+                         onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'800\' height=\'1000\' viewBox=\'0 0 800 1000\'><rect width=\'100%\' height=\'100%\' fill=\'%23FAF9F5\'/><text x=\'50%\' y=\'50%\' font-family=\'sans-serif\' font-size=\'32\' fill=\'%23D4AF37\' text-anchor=\'middle\'>GLIMMER DESIGN</text></svg>'"
+                         class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
+                    
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent"></div>
+                    
+                    <div class="absolute bottom-6 left-6 right-6 p-6 bg-white/95 backdrop-blur-md rounded-2xl border border-white/80 shadow-xl">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-mono text-brand-gold font-bold uppercase tracking-widest">Philosophy</span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        </div>
+                        <p class="text-sm font-bold text-brand-dark mt-2 leading-snug">
+                            「好的設計不是突兀的裝飾，而是讓品牌的核心價值如微光般自然顯現。」
+                        </p>
+                    </div>
+
+                    <div class="absolute top-6 right-6 w-20 h-20 pointer-events-none hidden sm:block">
+                        <svg class="spin-slow w-full h-full text-white/90" viewBox="0 0 100 100">
+                            <path id="circlePath" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
+                            <text font-size="10 font-mono uppercase" fill="currentColor">
+                                <textPath href="#circlePath" startOffset="0%">• GLIMMER DESIGN STUDIO • 2026</textPath>
+                            </text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 2. 關於工作室 About Us -->
+    <section id="about" class="py-28 px-6 bg-white border-y border-brand-border relative">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+                
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="gsap-title-reveal inline-flex items-center gap-2">
+                        <span class="w-8 h-[2px] bg-brand-gold"></span>
+                        <span class="text-xs font-mono text-brand-goldDark tracking-widest uppercase font-bold">About Studio</span>
+                    </div>
+                    <h2 class="gsap-title-reveal text-3xl sm:text-5xl font-black text-brand-dark leading-tight">
+                        精準的網格結構，<br>
+                        傳遞具溫度的品牌敘事。
+                    </h2>
+                </div>
+
+                <div class="lg:col-span-7 space-y-6 text-brand-gray leading-relaxed font-light text-base sm:text-lg">
+                    <p class="gsap-text-reveal">
+                        微光設計（GLIMMER DESIGN）是一間專注於當代平面視覺與品牌識別的工作室。我們相信，卓越的設計來自於理性邏輯與感性創意的微妙平衡。
+                    </p>
+                    <p class="gsap-text-reveal">
+                        透過深厚的字體排版學（Typography）與嚴謹的歐式網格架構，我們將抽象的品牌願景轉化為極具視覺辨識度與溫度的符號系統，幫助客戶在瞬息萬變的市場中立足。
+                    </p>
+                    <div class="gsap-text-reveal pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm font-semibold text-brand-dark">
+                        <div class="flex items-center gap-3 p-4 bg-brand-bg rounded-2xl border border-brand-border">
+                            <i class="fa-solid fa-ruler-combined text-brand-gold text-lg"></i>
+                            <span>嚴謹視覺幾何與版型系統</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 bg-brand-bg rounded-2xl border border-brand-border">
+                            <i class="fa-solid fa-stamp text-brand-gold text-lg"></i>
+                            <span>豐富的實體印刷與裝幀打樣經驗</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. 服務範疇 Services -->
+    <section id="services" class="py-28 px-6 bg-brand-bg relative">
+        <div class="max-w-7xl mx-auto">
+            
+            <div class="text-center max-w-3xl mx-auto mb-20 space-y-4">
+                <span class="text-xs font-mono text-brand-goldDark tracking-widest uppercase font-bold">Services & Solutions</span>
+                <h2 class="text-3xl sm:text-5xl font-black text-brand-dark">服務項目與解方</h2>
+                <p class="text-brand-gray text-base sm:text-lg font-light">
+                    從初創品牌的視覺奠基，到成熟品牌的視覺重塑與包裝裝幀。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- 服務 1 -->
+                <div class="gsap-service-card bg-white p-8 sm:p-10 rounded-3xl border border-brand-border hover:border-brand-gold shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col justify-between">
+                    <div>
+                        <div class="w-14 h-14 rounded-2xl bg-brand-gold/10 text-brand-gold flex items-center justify-center text-2xl mb-8">
+                            <i class="fa-solid fa-fingerprint"></i>
+                        </div>
+                        <span class="text-xs font-mono text-brand-goldDark font-bold">SERVICE 01</span>
+                        <h3 class="text-2xl font-bold text-brand-dark mt-1 mb-4">品牌識別系統 (VI Design)</h3>
+                        <p class="text-sm text-brand-gray leading-relaxed mb-6 font-light">
+                            建構完整的標誌系統、品牌標準字、標準色規範及各場景視覺應用指南（VI Guide）。
+                        </p>
+                    </div>
+
+                    <div class="border-t border-brand-border pt-6 space-y-3 text-xs">
+                        <div>
+                            <span class="font-bold text-brand-dark block mb-1"><i class="fa-solid fa-user text-brand-gold mr-1.5"></i>適合對象：</span>
+                            <span class="text-brand-gray">新創品牌創立、成熟企業形象重塑。</span>
+                        </div>
+                        <div>
+                            <span class="font-bold text-brand-dark block mb-1"><i class="fa-solid fa-bullseye text-brand-gold mr-1.5"></i>核心解決：</span>
+                            <span class="text-brand-gray">品牌定位模糊、跨平台視覺不統一問題。</span>
+                        </div>
+                        <div class="bg-brand-bg p-3 rounded-xl border border-brand-border/60 font-mono text-[11px] text-brand-gray">
+                            <span class="font-bold text-brand-dark block mb-1">交付項目：</span>
+                            Logo 向量檔, VI 手冊 PDF, 名片, 品牌標準字
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 服務 2 -->
+                <div class="gsap-service-card bg-white p-8 sm:p-10 rounded-3xl border border-brand-border hover:border-brand-gold shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col justify-between">
+                    <div>
+                        <div class="w-14 h-14 rounded-2xl bg-brand-gold/10 text-brand-gold flex items-center justify-center text-2xl mb-8">
+                            <i class="fa-solid fa-box-archive"></i>
+                        </div>
+                        <span class="text-xs font-mono text-brand-goldDark font-bold">SERVICE 02</span>
+                        <h3 class="text-2xl font-bold text-brand-dark mt-1 mb-4">包裝與出版裝幀 (Packaging & Editorial)</h3>
+                        <p class="text-sm text-brand-gray leading-relaxed mb-6 font-light">
+                            結合特種紙材觸感、結構設計與精細打樣印刷工藝，賦予商品與書籍高質感價值。
+                        </p>
+                    </div>
+
+                    <div class="border-t border-brand-border pt-6 space-y-3 text-xs">
+                        <div>
+                            <span class="font-bold text-brand-dark block mb-1"><i class="fa-solid fa-user text-brand-gold mr-1.5"></i>適合對象：</span>
+                            <span class="text-brand-gray">獨立出版社、精品禮盒品牌、文化單位。</span>
+                        </div>
+                        <div>
+                            <span class="font-bold text-brand-dark block mb-1"><i class="fa-solid fa-bullseye text-brand-gold mr-1.5"></i>核心解決：</span>
+                            <span class="text-brand-gray">提升產品陳列賣相與消費者開箱質感體驗。</span>
+                        </div>
+                        <div class="bg-brand-bg p-3 rounded-xl border border-brand-border/60 font-mono text-[11px] text-brand-gray">
+                            <span class="font-bold text-brand-dark block mb-1">交付項目：</span>
+                            包裝刀模線, 裝幀結構圖, 現場打樣監修
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 服務 3 -->
+                <div class="gsap-service-card bg-white p-8 sm:p-10 rounded-3xl border border-brand-border hover:border-brand-gold shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col justify-between">
+                    <div>
+                        <div class="w-14 h-14 rounded-2xl bg-brand-gold/10 text-brand-gold flex items-center justify-center text-2xl mb-8">
+                            <i class="fa-solid fa-layer-group"></i>
+                        </div>
+                        <span class="text-xs font-mono text-brand-goldDark font-bold">SERVICE 03</span>
+                        <h3 class="text-2xl font-bold text-brand-dark mt-1 mb-4">平面視覺與海報 (Poster & Graphics)</h3>
+                        <p class="text-sm text-brand-gray leading-relaxed mb-6 font-light">
+                            展演活動主視覺編排、展覽文宣、動態海報（Motion Poster）與數位媒體視覺設計。
+                        </p>
+                    </div>
+
+                    <div class="border-t border-brand-border pt-6 space-y-3 text-xs">
+                        <div>
+                            <span class="font-bold text-brand-dark block mb-1"><i class="fa-solid fa-user text-brand-gold mr-1.5"></i>適合對象：</span>
+                            <span class="text-brand-gray">策展單位、音樂節、商業行銷團隊。</span>
+                        </div>
+                        <div>
+                            <span class="font-bold text-brand-dark block mb-1"><i class="fa-solid fa-bullseye text-brand-gold mr-1.5"></i>核心解決：</span>
+                            <span class="text-brand-gray">打破視覺同質化，第一時間精準吸引受眾目光。</span>
+                        </div>
+                        <div class="bg-brand-bg p-3 rounded-xl border border-brand-border/60 font-mono text-[11px] text-brand-gray">
+                            <span class="font-bold text-brand-dark block mb-1">交付項目：</span>
+                            高解析印刷檔, 社群圖像模板, 動態短檔
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. 精選作品集 Portfolio Gallery -->
+    <section id="portfolio" class="py-28 px-6 bg-white border-t border-brand-border">
+        <div class="max-w-7xl mx-auto">
+            
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-6">
+                <div>
+                    <span class="text-xs font-mono text-brand-goldDark tracking-widest uppercase font-bold">Selected Works</span>
+                    <h2 class="text-3xl sm:text-5xl font-black text-brand-dark mt-2">精選案例與研究</h2>
+                </div>
+                
+                <!-- 動態篩選按鈕 -->
+                <div class="flex flex-wrap gap-3 font-mono text-xs">
+                    <button class="filter-btn active px-6 py-3 rounded-full border border-brand-gold bg-brand-gold text-white font-bold shadow-md transition-all duration-300" data-filter="all">ALL WORKS</button>
+                    <button class="filter-btn px-6 py-3 rounded-full border border-brand-border text-brand-gray hover:text-brand-dark transition-all duration-300" data-filter="branding">品牌識別</button>
+                    <button class="filter-btn px-6 py-3 rounded-full border border-brand-border text-brand-gray hover:text-brand-dark transition-all duration-300" data-filter="packaging">包裝裝幀</button>
+                    <button class="filter-btn px-6 py-3 rounded-full border border-brand-border text-brand-gray hover:text-brand-dark transition-all duration-300" data-filter="poster">海報視覺</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="portfolio-grid">
+                
+                <!-- 案例 1 -->
+                <div class="portfolio-card portfolio-item branding bg-brand-bg rounded-3xl overflow-hidden border border-brand-border cursor-pointer shadow-sm hover:shadow-2xl transition-all duration-500" onclick="openModal('modal-1')">
+                    <div class="relative w-full aspect-[4/3] overflow-hidden bg-stone-200">
+                        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop" 
+                             alt="Branding Case" 
+                             onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'800\' height=\'600\' viewBox=\'0 0 800 600\'><rect width=\'100%\' height=\'100%\' fill=\'%23FAF9F5\'/><text x=\'50%\' y=\'50%\' font-family=\'sans-serif\' font-size=\'28\' fill=\'%23D4AF37\' text-anchor=\'middle\'>光域藝文中心 VI</text></svg>'"
+                             class="img-cover w-full h-full object-cover">
+                        
+                        <div class="card-curtain absolute inset-0 bg-brand-dark/90 p-8 flex flex-col justify-between text-white">
+                            <span class="text-xs font-mono text-brand-gold font-bold uppercase tracking-widest">VIEW CASE STUDY →</span>
+                            <div>
+                                <span class="text-xs text-brand-goldLight font-mono">BRAND IDENTITY</span>
+                                <h3 class="text-2xl font-bold mt-1 text-white">光域藝文中心</h3>
+                                <p class="text-xs text-gray-300 mt-2 line-clamp-2 font-light">打造充滿幾何視覺張力的當代藝文識別系統...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6 bg-white border-t border-brand-border flex items-center justify-between">
+                        <div>
+                            <span class="text-[11px] font-mono text-brand-goldDark font-bold">BRAND IDENTITY</span>
+                            <h4 class="font-bold text-brand-dark text-lg">光域藝文中心 VI 系統</h4>
+                        </div>
+                        <span class="w-9 h-9 rounded-full bg-brand-bg flex items-center justify-center text-brand-dark group-hover:bg-brand-gold group-hover:text-white transition-colors">
+                            <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 案例 2 -->
+                <div class="portfolio-card portfolio-item packaging bg-brand-bg rounded-3xl overflow-hidden border border-brand-border cursor-pointer shadow-sm hover:shadow-2xl transition-all duration-500" onclick="openModal('modal-2')">
+                    <div class="relative w-full aspect-[4/3] overflow-hidden bg-stone-200">
+                        <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=800&auto=format&fit=crop" 
+                             alt="Packaging Case" 
+                             onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'800\' height=\'600\' viewBox=\'0 0 800 600\'><rect width=\'100%\' height=\'100%\' fill=\'%23FAF9F5\'/><text x=\'50%\' y=\'50%\' font-family=\'sans-serif\' font-size=\'28\' fill=\'%23D4AF37\' text-anchor=\'middle\'>《深邃之境》詩集</text></svg>'"
+                             class="img-cover w-full h-full object-cover">
+                        
+                        <div class="card-curtain absolute inset-0 bg-brand-dark/90 p-8 flex flex-col justify-between text-white">
+                            <span class="text-xs font-mono text-brand-gold font-bold uppercase tracking-widest">VIEW CASE STUDY →</span>
+                            <div>
+                                <span class="text-xs text-brand-goldLight font-mono">EDITORIAL & PACKAGING</span>
+                                <h3 class="text-2xl font-bold mt-1 text-white">《深邃之境》獨立詩集</h3>
+                                <p class="text-xs text-gray-300 mt-2 line-clamp-2 font-light">採用裸背穿線工藝與灰卡打凹，賦予詩集手感溫度...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6 bg-white border-t border-brand-border flex items-center justify-between">
+                        <div>
+                            <span class="text-[11px] font-mono text-brand-goldDark font-bold">EDITORIAL & PACKAGING</span>
+                            <h4 class="font-bold text-brand-dark text-lg">《深邃之境》裝幀設計</h4>
+                        </div>
+                        <span class="w-9 h-9 rounded-full bg-brand-bg flex items-center justify-center text-brand-dark group-hover:bg-brand-gold group-hover:text-white transition-colors">
+                            <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 案例 3 -->
+                <div class="portfolio-card portfolio-item poster bg-brand-bg rounded-3xl overflow-hidden border border-brand-border cursor-pointer shadow-sm hover:shadow-2xl transition-all duration-500" onclick="openModal('modal-3')">
+                    <div class="relative w-full aspect-[4/3] overflow-hidden bg-stone-200">
+                        <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=800&auto=format&fit=crop" 
+                             alt="Poster Case" 
+                             onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'800\' height=\'600\' viewBox=\'0 0 800 600\'><rect width=\'100%\' height=\'100%\' fill=\'%23FAF9F5\'/><text x=\'50%\' y=\'50%\' font-family=\'sans-serif\' font-size=\'28\' fill=\'%23D4AF37\' text-anchor=\'middle\'>前衛聲響藝術節</text></svg>'"
+                             class="img-cover w-full h-full object-cover">
+                        
+                        <div class="card-curtain absolute inset-0 bg-brand-dark/90 p-8 flex flex-col justify-between text-white">
+                            <span class="text-xs font-mono text-brand-gold font-bold uppercase tracking-widest">VIEW CASE STUDY →</span>
+                            <div>
+                                <span class="text-xs text-brand-goldLight font-mono">POSTER & MOTION</span>
+                                <h3 class="text-2xl font-bold mt-1 text-white">前衛聲響藝術節</h3>
+                                <p class="text-xs text-gray-300 mt-2 line-clamp-2 font-light">將聲波幾何化，轉化為高對比海報與動態影像...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6 bg-white border-t border-brand-border flex items-center justify-between">
+                        <div>
+                            <span class="text-[11px] font-mono text-brand-goldDark font-bold">POSTER & MOTION</span>
+                            <h4 class="font-bold text-brand-dark text-lg">2025 前衛聲響藝術節</h4>
+                        </div>
+                        <span class="w-9 h-9 rounded-full bg-brand-bg flex items-center justify-center text-brand-dark group-hover:bg-brand-gold group-hover:text-white transition-colors">
+                            <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. 合作流程 時間軸 Process -->
+    <section id="process" class="py-28 px-6 bg-brand-bg border-t border-brand-border relative">
+        <div class="max-w-7xl mx-auto">
+            
+            <div class="text-center max-w-3xl mx-auto mb-20">
+                <span class="text-xs font-mono text-brand-goldDark tracking-widest uppercase font-bold">How We Work</span>
+                <h2 class="text-3xl sm:text-5xl font-black text-brand-dark mt-2">合作流程</h2>
+                <p class="text-brand-gray mt-4 font-light">嚴謹的四步驟，確保專案進度與視覺品質完美落實。</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
+                
+                <div class="process-card bg-white p-8 rounded-3xl border border-brand-border hover:border-brand-gold transition-all duration-300">
+                    <span class="text-4xl font-black font-mono text-brand-gold/30">01</span>
+                    <h3 class="text-lg font-bold text-brand-dark mt-2">需求訪談與洞察</h3>
+                    <p class="text-xs text-brand-gray mt-3 leading-relaxed font-light">
+                        深入了解品牌核心、競爭對手與目標客群，確立視覺關鍵字與專案時程。
+                    </p>
+                </div>
+
+                <div class="process-card bg-white p-8 rounded-3xl border border-brand-border hover:border-brand-gold transition-all duration-300">
+                    <span class="text-4xl font-black font-mono text-brand-gold/30">02</span>
+                    <h3 class="text-lg font-bold text-brand-dark mt-2">幾何網格與提案</h3>
+                    <p class="text-xs text-brand-gray mt-3 leading-relaxed font-light">
+                        擬定情緒板（Moodboard）、發展幾何標誌圖形與提供 2-3 套初稿方案。
+                    </p>
+                </div>
+
+                <div class="process-card bg-white p-8 rounded-3xl border border-brand-border hover:border-brand-gold transition-all duration-300">
+                    <span class="text-4xl font-black font-mono text-brand-gold/30">03</span>
+                    <h3 class="text-lg font-bold text-brand-dark mt-2">質感細修與應用</h3>
+                    <p class="text-xs text-brand-gray mt-3 leading-relaxed font-light">
+                        針對選定方案進行色彩校正、字形比例微調與 Mockup 情境演練。
+                    </p>
+                </div>
+
+                <div class="process-card bg-white p-8 rounded-3xl border border-brand-border hover:border-brand-gold transition-all duration-300">
+                    <span class="text-4xl font-black font-mono text-brand-gold/30">04</span>
+                    <h3 class="text-lg font-bold text-brand-dark mt-2">印刷監修與交付</h3>
+                    <p class="text-xs text-brand-gray mt-3 leading-relaxed font-light">
+                        輸出高解析度完稿向量檔，親自參與現場打樣監修，確保完稿零誤差。
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 6. 團隊介紹 Team -->
+    <section id="team" class="py-28 px-6 bg-white border-t border-brand-border">
+        <div class="max-w-7xl mx-auto">
+            
+            <div class="text-center max-w-3xl mx-auto mb-20">
+                <span class="text-xs font-mono text-brand-goldDark tracking-widest uppercase font-bold">Meet The Team</span>
+                <h2 class="text-3xl sm:text-5xl font-black text-brand-dark mt-2">團隊成員</h2>
+                <p class="text-brand-gray mt-4 font-light">專注於視覺質感與設計邏輯的專業執行團隊。</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl mx-auto">
+                
+                <div class="gsap-team-card bg-brand-bg p-8 sm:p-10 rounded-3xl border border-brand-border shadow-sm flex flex-col sm:flex-row items-center gap-8">
+                    <div class="w-28 h-28 rounded-2xl overflow-hidden border-2 border-brand-gold flex-shrink-0 shadow-md">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop" 
+                             alt="Creative Director" 
+                             onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'300\' viewBox=\'0 0 300 300\'><rect width=\'100%\' height=\'100%\' fill=\'%23EFECE6\'/><text x=\'50%\' y=\'50%\' font-family=\'sans-serif\' font-size=\'24\' fill=\'%23D4AF37\' text-anchor=\'middle\'>KAI</text></svg>'"
+                             class="w-full h-full object-cover">
+                    </div>
+                    <div class="text-center sm:text-left space-y-2">
+                        <span class="text-xs font-mono text-brand-goldDark font-bold">FOUNDER & ART DIRECTOR</span>
+                        <h3 class="text-2xl font-bold text-brand-dark">陳凱 KAI CHEN</h3>
+                        <p class="text-xs text-brand-gray leading-relaxed font-light">
+                            9 年品牌視覺規劃經驗。擅長字體結構與歐式幾何網格設計，專注於將品牌精神轉化為具傳播力的視覺符號。
+                        </p>
+                    </div>
+                </div>
+
+                <div class="gsap-team-card bg-brand-bg p-8 sm:p-10 rounded-3xl border border-brand-border shadow-sm flex flex-col sm:flex-row items-center gap-8">
+                    <div class="w-28 h-28 rounded-2xl overflow-hidden border-2 border-brand-gold flex-shrink-0 shadow-md">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop" 
+                             alt="Packaging Designer" 
+                             onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'300\' viewBox=\'0 0 300 300\'><rect width=\'100%\' height=\'100%\' fill=\'%23EFECE6\'/><text x=\'50%\' y=\'50%\' font-family=\'sans-serif\' font-size=\'24\' fill=\'%23D4AF37\' text-anchor=\'middle\'>ELENA</text></svg>'"
+                             class="w-full h-full object-cover">
+                    </div>
+                    <div class="text-center sm:text-left space-y-2">
+                        <span class="text-xs font-mono text-brand-goldDark font-bold">SENIOR PACKAGING DESIGNER</span>
+                        <h3 class="text-2xl font-bold text-brand-dark">林詠 ELENA LIN</h3>
+                        <p class="text-xs text-brand-gray leading-relaxed font-light">
+                            深耕特種紙材與裝幀工藝。認為實體印刷的手感觸覺是品牌與消費者之間最動人的溫度溝通。
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 7. 聯絡表單 Contact Us -->
+    <section id="contact" class="py-28 px-6 bg-white border-t border-brand-border">
+        <div class="max-w-4xl mx-auto">
+            
+            <div class="text-center mb-16">
+                <span class="text-xs font-mono text-brand-goldDark tracking-widest uppercase font-bold">Start A Project</span>
+                <h2 class="text-3xl sm:text-5xl font-black text-brand-dark mt-2">聯絡我們</h2>
+                <p class="text-brand-gray mt-4 font-light">歡迎填寫合作需求，我們將在 24 小時內與您聯繫。</p>
+            </div>
+
+            <form id="contact-form" class="bg-brand-bg p-8 sm:p-12 rounded-3xl border border-brand-border space-y-6 shadow-xl">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-mono text-brand-dark font-bold uppercase mb-2">您的姓名 *</label>
+                        <input type="text" required placeholder="例如：林先生 / 小姐" class="w-full bg-white border border-brand-border rounded-2xl px-5 py-4 text-sm text-brand-dark focus:outline-none focus:border-brand-gold transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono text-brand-dark font-bold uppercase mb-2">電子郵件 *</label>
+                        <input type="email" required placeholder="name@company.com" class="w-full bg-white border border-brand-border rounded-2xl px-5 py-4 text-sm text-brand-dark focus:outline-none focus:border-brand-gold transition-all">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-mono text-brand-dark font-bold uppercase mb-2">需求類型 *</label>
+                        <select required class="w-full bg-white border border-brand-border rounded-2xl px-5 py-4 text-sm text-brand-dark focus:outline-none focus:border-brand-gold transition-all">
+                            <option value="" disabled selected>請選擇服務項目</option>
+                            <option value="branding">品牌識別系統 (VI Design)</option>
+                            <option value="packaging">包裝與出版裝幀 (Packaging & Editorial)</option>
+                            <option value="poster">平面視覺與海報 (Poster & Graphics)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono text-brand-dark font-bold uppercase mb-2">預算範圍 *</label>
+                        <select required class="w-full bg-white border border-brand-border rounded-2xl px-5 py-4 text-sm text-brand-dark focus:outline-none focus:border-brand-gold transition-all">
+                            <option value="" disabled selected>請選擇預算區間</option>
+                            <option value="b1">NT$ 50,000 - 100,000</option>
+                            <option value="b2">NT$ 100,000 - 200,000</option>
+                            <option value="b3">NT$ 200,000 +</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-brand-dark font-bold uppercase mb-2">專案描述 *</label>
+                    <textarea rows="4" required placeholder="請簡單說明專案內容與預估上線時間..." class="w-full bg-white border border-brand-border rounded-2xl px-5 py-4 text-sm text-brand-dark focus:outline-none focus:border-brand-gold transition-all"></textarea>
+                </div>
+
+                <button type="submit" class="w-full py-5 bg-brand-dark text-white font-bold text-xs tracking-widest uppercase rounded-2xl hover:bg-brand-gold transition-all duration-300 shadow-xl flex items-center justify-center gap-3">
+                    <span>送出表單</span>
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+
+            <div id="form-success" class="hidden mt-8 p-8 bg-amber-50 border border-brand-gold/40 rounded-3xl text-center text-brand-dark shadow-lg">
+                <h4 class="text-2xl font-bold">訊息已成功送出！</h4>
+                <p class="text-sm text-brand-gray mt-2">感謝您的聯繫，微光團隊將會在 24 小時內回覆您。</p>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="py-12 border-t border-brand-border bg-brand-bg text-brand-gray text-xs">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-3">
+                <span class="w-3 h-3 rounded-full bg-brand-gold"></span>
+                <span class="font-bold text-brand-dark">GLIMMER DESIGN STUDIO</span>
+            </div>
+            <p class="font-mono">© 2026 GLIMMER DESIGN. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <div id="modal-1" class="modal-backdrop fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="modal-box bg-white max-w-3xl w-full max-h-[90vh] overflow-y-auto rounded-3xl border border-brand-border p-8 sm:p-12 relative text-brand-dark shadow-2xl">
+            <button onclick="closeModal('modal-1')" aria-label="Close modal" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-brand-bg flex items-center justify-center text-brand-dark hover:bg-brand-gold hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <span class="text-xs font-mono text-brand-goldDark font-bold uppercase">Case Study 01</span>
+            <h2 class="text-3xl font-black text-brand-dark mt-1 mb-6">光域藝文中心 VI 系統</h2>
+            <p class="text-sm text-brand-gray leading-relaxed mb-4"><strong>背景：</strong>光域藝文中心為新興跨界展演空間。</p>
+            <p class="text-sm text-brand-gray leading-relaxed mb-4"><strong>挑戰：</strong>舊識別缺乏幾何美感，難以建立前衛地標形象。</p>
+            <p class="text-sm text-brand-gray leading-relaxed"><strong>成果：</strong>建立極簡幾何 Logo 系統，展覽人次成長 45%。</p>
+        </div>
+    </div>
+
+    <div id="modal-2" class="modal-backdrop fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="modal-box bg-white max-w-3xl w-full max-h-[90vh] overflow-y-auto rounded-3xl border border-brand-border p-8 sm:p-12 relative text-brand-dark shadow-2xl">
+            <button onclick="closeModal('modal-2')" aria-label="Close modal" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-brand-bg flex items-center justify-center text-brand-dark hover:bg-brand-gold hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <span class="text-xs font-mono text-brand-goldDark font-bold uppercase">Case Study 02</span>
+            <h2 class="text-3xl font-black text-brand-dark mt-1 mb-6">《深邃之境》獨立詩集</h2>
+            <p class="text-sm text-brand-gray leading-relaxed mb-4"><strong>背景：</strong>創作者限量刊物。</p>
+            <p class="text-sm text-brand-gray leading-relaxed mb-4"><strong>挑戰：</strong>在有限預算內達成極致實體觸感。</p>
+            <p class="text-sm text-brand-gray leading-relaxed"><strong>成果：</strong>裸背裝幀與打凹工藝，首刷 500 冊於書展兩日內售罄。</p>
+        </div>
+    </div>
+
+    <div id="modal-3" class="modal-backdrop fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="modal-box bg-white max-w-3xl w-full max-h-[90vh] overflow-y-auto rounded-3xl border border-brand-border p-8 sm:p-12 relative text-brand-dark shadow-2xl">
+            <button onclick="closeModal('modal-3')" aria-label="Close modal" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-brand-bg flex items-center justify-center text-brand-dark hover:bg-brand-gold hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <span class="text-xs font-mono text-brand-goldDark font-bold uppercase">Case Study 03</span>
+            <h2 class="text-3xl font-black text-brand-dark mt-1 mb-6">2025 前衛聲響藝術節</h2>
+            <p class="text-sm text-brand-gray leading-relaxed mb-4"><strong>背景：</strong>音像展演活動視覺。</p>
+            <p class="text-sm text-brand-gray leading-relaxed mb-4"><strong>挑戰：</strong>抽象聲波圖形化與數位擴散。</p>
+            <p class="text-sm text-brand-gray leading-relaxed"><strong>成果：</strong>AE 動態海報社群觸及突破 20 萬次。</p>
+        </div>
+    </div>
+
+    <!-- GSAP JavaScript -->
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        window.addEventListener('load', () => {
+            const heroTL = gsap.timeline();
+            
+            heroTL.from(".gsap-hero-badge", { y: -20, opacity: 0, duration: 0.8, ease: "power3.out" })
+                  .from(".gsap-hero-title", { y: 50, opacity: 0, duration: 1, stagger: 0.2, ease: "power4.out" }, "-=0.4")
+                  .from(".gsap-hero-sub", { y: 20, opacity: 0, duration: 0.8, ease: "power3.out" }, "-=0.6")
+                  .from(".gsap-hero-btn", { y: 20, opacity: 0, duration: 0.7, ease: "power2.out" }, "-=0.5")
+                  .from(".gsap-hero-stats", { opacity: 0, y: 20, duration: 0.8, onComplete: startCounters }, "-=0.4")
+                  .from(".gsap-hero-img-box", { scale: 0.9, opacity: 0, duration: 1, ease: "power3.out" }, "-=1");
+
+            function startCounters() {
+                document.querySelectorAll('.counter-num').forEach(counter => {
+                    const target = +counter.getAttribute('data-target');
+                    gsap.to(counter, {
+                        innerText: target,
+                        duration: 1.5,
+                        snap: { innerText: 1 },
+                        ease: "power1.out"
+                    });
+                });
+            }
+
+            gsap.utils.toArray('.gsap-title-reveal').forEach(title => {
+                gsap.from(title, {
+                    scrollTrigger: { trigger: title, start: "top 85%" },
+                    y: 30, opacity: 0, duration: 0.8, ease: "power3.out"
+                });
+            });
+
+            gsap.utils.toArray('.gsap-text-reveal').forEach(text => {
+                gsap.from(text, {
+                    scrollTrigger: { trigger: text, start: "top 85%" },
+                    y: 20, opacity: 0, duration: 0.7, stagger: 0.15, ease: "power2.out"
+                });
+            });
+
+            gsap.from(".gsap-service-card", {
+                scrollTrigger: { trigger: "#services", start: "top 75%" },
+                y: 50, opacity: 0, duration: 0.8, stagger: 0.2, ease: "power3.out"
+            });
+
+            gsap.from(".portfolio-item", {
+                scrollTrigger: { trigger: "#portfolio", start: "top 75%" },
+                y: 50, opacity: 0, duration: 0.8, stagger: 0.15, ease: "power3.out"
+            });
+
+            gsap.from(".process-card", {
+                scrollTrigger: { trigger: "#process", start: "top 75%" },
+                y: 40, opacity: 0, duration: 0.7, stagger: 0.15, ease: "power2.out"
+            });
+        });
+
+        // 篩選功能
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const portfolioItems = document.querySelectorAll('.portfolio-item');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => {
+                    b.classList.remove('active', 'border-brand-gold', 'bg-brand-gold', 'text-white', 'shadow-md');
+                    b.classList.add('border-brand-border', 'text-brand-gray');
+                });
+
+                btn.classList.add('active', 'border-brand-gold', 'bg-brand-gold', 'text-white', 'shadow-md');
+                btn.classList.remove('border-brand-border', 'text-brand-gray');
+
+                const filter = btn.getAttribute('data-filter');
+
+                portfolioItems.forEach(item => {
+                    if (filter === 'all' || item.classList.contains(filter)) {
+                        item.style.display = 'block';
+                        gsap.fromTo(item, { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power2.out" });
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            this.reset();
+            const successBox = document.getElementById('form-success');
+            successBox.classList.remove('hidden');
+            gsap.from(successBox, { opacity: 0, y: 15, duration: 0.5, ease: "power3.out" });
+        });
+    </script>
+</body>
+</html>
